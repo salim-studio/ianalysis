@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ianalysis — فحص المحتوى المولّد بالذكاء الاصطناعي</title>
+<link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="shield">🛡️</span> ianalysis <small>نسخة عربية تجريبية</small></div>
+  <div class="links"><span class="pill">صور</span><span class="pill">صوت</span><span class="pill">فيديو</span><span class="pill">نص</span></div>
+</header>
+
+<main class="wrap">
+  <section class="hero">
+    <h1>تحقّق إن كان المحتوى مولّدًا بالذكاء الاصطناعي</h1>
+    <p>ارفع صورة أو مقطع صوت/فيديو، أو الصق نصًا — وسيحلل النظام العلامات والبصمات الإحصائية ويعطيك احتمالًا مع تفسير. (أداة تعليمية تحاكي فكرة synthid.com وليست مفتاح Google الرسمي)</p>
+  </section>
+
+  <nav class="tabs">
+    <button class="tab active" data-tab="image">🖼️ صورة</button>
+    <button class="tab" data-tab="audio">🎧 صوت / فيديو</button>
+    <button class="tab" data-tab="text">📝 نص</button>
+  </nav>
+
+  <section id="panel-image" class="panel">
+    <div id="drop" class="drop">
+      <p>📤 اسحب الصورة هنا أو <label class="btn">اختر ملف<input type="file" id="imgFile" accept=".png,.jpg,.jpeg,.webp,.bmp" hidden></label></p>
+      <small>PNG / JPG / WEBP — الأفضل جودة عالية بدون ضغط شديد</small>
+      <img id="preview" alt="" style="display:none">
+    </div>
+    <button class="btn primary" id="btnImg">افحص الصورة</button>
+  </section>
+
+  <section id="panel-audio" class="panel" style="display:none">
+    <div class="drop">
+      <p>🎧 ارفع مقطع صوت أو فيديو <label class="btn">اختر ملف<input type="file" id="audFile" accept=".mp3,.wav,.ogg,.m4a,.flac,.mp4,.webm,.mov" hidden></label></p>
+      <small>MP3 / WAV / M4A / MP4 / WEBM — بحد أقصى 50MB</small>
+      <div id="audName"></div>
+    </div>
+    <button class="btn primary" id="btnAud">افحص المقطع</button>
+  </section>
+
+  <section id="panel-text" class="panel" style="display:none">
+    <textarea id="txt" rows="8" placeholder="الصق هنا مقالًا أو فقرة (50+ كلمة لدقة أفضل)... يدعم العربية والإنجليزية"></textarea>
+    <div class="row">
+      <button class="btn primary" id="btnTxt">افحص النص</button>
+      <button class="btn" id="btnSample">جرّب نصًا تجريبيًا</button>
+    </div>
+  </section>
+
+  <section id="result" class="result" style="display:none">
+    <h2 id="verdict"></h2>
+    <div class="gauge"><div id="bar"></div></div>
+    <p id="score"></p>
+    <pre id="details"></pre>
+  </section>
+
+  <section class="notes">
+    <h3>كيف يعمل؟</h3>
+    <ul>
+      <li><b>الصور:</b> فحص البيانات الوصفية (EXIF/XMP/C2PA) + تحليل الترددات FFT + تجانس الضجيج.</li>
+      <li><b>الصوت/الفيديو:</b> فحص علامات TTS المعروفة + تحليل طيفي لملفات WAV.</li>
+      <li><b>النص:</b> التنوع المعجمي، الانفجارية، التكرار، العبارات النمطية.</li>
+    </ul>
+    <p class="warn">⚠️ التعديلات الشديدة والضغط القوي يُضعفان الإشارة. النتيجة احتمالية وليست دليلًا قاطعًا — اجمع أدلة إضافية دائمًا.</p>
+  </section>
+</main>
+<script src="/static/app.js"></script>
+</body>
+</html>
