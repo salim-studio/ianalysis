@@ -1,4 +1,6 @@
-# ianalysis — AI Content Detector
+![ianalysis — AI Content Detector](assets/banner.svg)
+
+# <img src="static/logo.svg" width="32" alt="ianalysis logo"> ianalysis — AI Content Detector
 
 Web app that estimates whether an image, audio/video clip, or text was AI-generated.
 Flask backend + modern web UI (English).
