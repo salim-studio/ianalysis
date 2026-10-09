@@ -1,7 +1,6 @@
-"""Image AI-detection heuristics (SynthID-like clone).
+"""Image AI-generation detector (ianalysis engine).
 
-This is NOT Google's proprietary SynthID key detector.
-It combines:
+Combines:
  1) Metadata / provenance scan (EXIF, PNG info, XMP, C2PA/Content Credentials markers)
  2) Frequency-domain analysis (FFT high-frequency energy — diffusion models leave traces)
  3) Noise / texture statistics
@@ -14,7 +13,7 @@ import io
 AI_KEYWORDS = [
     "ai generated", "generated with ai", "artificial intelligence",
     "midjourney", "dall-e", "dalle", "stable diffusion", "sdxl",
-    "firefly", "adobe firefly", "imagen", "gemini", "synthid",
+    "firefly", "adobe firefly", "imagen", "gemini",
     "c2pa", "content credentials", "openai", "leonardo", "bing image",
     "ideogram", "flux", "comfyui", "automatic1111", "invokeai",
 ]
@@ -158,15 +157,15 @@ def analyze_image(file_bytes: bytes):
     # If provenance metadata says AI → trust it strongly
     if meta_score >= 0.9:
         final = 0.97
-        verdict = "watermarked"
+        verdict = "ai_generated"
     else:
         final = float(np.clip(stat_score, 0.01, 0.99))
         if final >= 0.7:
-            verdict = "watermarked"
+            verdict = "ai_generated"
         elif final >= 0.4:
             verdict = "uncertain"
         else:
-            verdict = "not_watermarked"
+            verdict = "human"
 
     details = {
         "metadata_hits": hits,

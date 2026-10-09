@@ -1,8 +1,8 @@
-"""Heuristic AI-text detector (Arabic + English).
+"""Heuristic AI-text detector (ianalysis engine, English + Arabic).
 
 Combines: lexical diversity (TTR), burstiness (sentence-length variance),
 repetition, connective overuse, punctuation uniformity — typical LLM traces.
-Returns score 0..1 + verdict: watermarked / uncertain / not_watermarked.
+Returns score 0..1 + verdict: ai_generated / uncertain / human.
 """
 import re
 from collections import Counter
@@ -23,7 +23,7 @@ def analyze_text(text: str):
     n = len(words)
     if n < 10:
         return {"score": 0.0, "verdict": "uncertain",
-                "details": {"reason": "نص قصير جدًا — لا يمكن الحكم (أدخل 50+ كلمة لدقة أفضل)"},
+                "details": {"reason": "Text too short — cannot judge (enter 50+ words for better accuracy)"},
                 "signals": {}}
     uniq = len(set(w.lower() for w in words))
     ttr = uniq / max(n, 1)  # low TTR → repetitive → more AI-like
@@ -64,11 +64,11 @@ def analyze_text(text: str):
     score = float(max(0.01, min(0.99, score)))
 
     if score >= 0.7:
-        verdict = "watermarked"
+        verdict = "ai_generated"
     elif score >= 0.4:
         verdict = "uncertain"
     else:
-        verdict = "not_watermarked"
+        verdict = "human"
 
     return {
         "score": round(score, 3),

@@ -1,52 +1,58 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en" dir="ltr">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>ianalysis — فحص المحتوى المولّد بالذكاء الاصطناعي</title>
+<meta name="description" content="ianalysis — detect AI-generated images, audio, video and text.">
+<title>ianalysis — AI Content Detector</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%236366f1'/%3E%3Cstop offset='1' stop-color='%2322d3ee'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='64' height='64' rx='14' fill='url(%23g)'/%3E%3Ctext x='32' y='43' font-family='Arial' font-weight='bold' font-size='30' fill='white' text-anchor='middle'%3EiA%3C/text%3E%3C/svg%3E">
 <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
 <header class="topbar">
-  <div class="brand"><span class="shield">🛡️</span> ianalysis <small>نسخة عربية تجريبية</small></div>
-  <div class="links"><span class="pill">صور</span><span class="pill">صوت</span><span class="pill">فيديو</span><span class="pill">نص</span></div>
+  <div class="brand">
+    <span class="logo">iA</span>
+    <span class="name">ianalysis</span>
+    <small>AI Content Detector</small>
+  </div>
+  <div class="links"><span class="pill">Images</span><span class="pill">Audio</span><span class="pill">Video</span><span class="pill">Text</span></div>
 </header>
 
 <main class="wrap">
   <section class="hero">
-    <h1>تحقّق إن كان المحتوى مولّدًا بالذكاء الاصطناعي</h1>
-    <p>ارفع صورة أو مقطع صوت/فيديو، أو الصق نصًا — وسيحلل النظام العلامات والبصمات الإحصائية ويعطيك احتمالًا مع تفسير. (أداة تعليمية تحاكي فكرة synthid.com وليست مفتاح Google الرسمي)</p>
+    <h1>Was this content made by AI?</h1>
+    <p>Upload an image, an audio/video clip, or paste a text. ianalysis scans provenance markers and statistical fingerprints, then returns a likelihood score with an explanation.</p>
   </section>
 
   <nav class="tabs">
-    <button class="tab active" data-tab="image">🖼️ صورة</button>
-    <button class="tab" data-tab="audio">🎧 صوت / فيديو</button>
-    <button class="tab" data-tab="text">📝 نص</button>
+    <button class="tab active" data-tab="image">🖼️ Image</button>
+    <button class="tab" data-tab="audio">🎧 Audio / Video</button>
+    <button class="tab" data-tab="text">📝 Text</button>
   </nav>
 
   <section id="panel-image" class="panel">
     <div id="drop" class="drop">
-      <p>📤 اسحب الصورة هنا أو <label class="btn">اختر ملف<input type="file" id="imgFile" accept=".png,.jpg,.jpeg,.webp,.bmp" hidden></label></p>
-      <small>PNG / JPG / WEBP — الأفضل جودة عالية بدون ضغط شديد</small>
+      <p>📤 Drag &amp; drop an image here or <label class="btn">Choose file<input type="file" id="imgFile" accept=".png,.jpg,.jpeg,.webp,.bmp" hidden></label></p>
+      <small>PNG / JPG / WEBP — high quality, lightly compressed files give the best results</small>
       <img id="preview" alt="" style="display:none">
     </div>
-    <button class="btn primary" id="btnImg">افحص الصورة</button>
+    <button class="btn primary" id="btnImg">Analyze image</button>
   </section>
 
   <section id="panel-audio" class="panel" style="display:none">
     <div class="drop">
-      <p>🎧 ارفع مقطع صوت أو فيديو <label class="btn">اختر ملف<input type="file" id="audFile" accept=".mp3,.wav,.ogg,.m4a,.flac,.mp4,.webm,.mov" hidden></label></p>
-      <small>MP3 / WAV / M4A / MP4 / WEBM — بحد أقصى 50MB</small>
+      <p>🎧 Upload an audio or video clip <label class="btn">Choose file<input type="file" id="audFile" accept=".mp3,.wav,.ogg,.m4a,.flac,.mp4,.webm,.mov" hidden></label></p>
+      <small>MP3 / WAV / M4A / MP4 / WEBM — max 50 MB</small>
       <div id="audName"></div>
     </div>
-    <button class="btn primary" id="btnAud">افحص المقطع</button>
+    <button class="btn primary" id="btnAud">Analyze media</button>
   </section>
 
   <section id="panel-text" class="panel" style="display:none">
-    <textarea id="txt" rows="8" placeholder="الصق هنا مقالًا أو فقرة (50+ كلمة لدقة أفضل)... يدعم العربية والإنجليزية"></textarea>
+    <textarea id="txt" rows="8" placeholder="Paste an article or paragraph here (50+ words for best accuracy)... English and Arabic supported"></textarea>
     <div class="row">
-      <button class="btn primary" id="btnTxt">افحص النص</button>
-      <button class="btn" id="btnSample">جرّب نصًا تجريبيًا</button>
+      <button class="btn primary" id="btnTxt">Analyze text</button>
+      <button class="btn" id="btnSample">Try a sample</button>
     </div>
   </section>
 
@@ -58,15 +64,19 @@
   </section>
 
   <section class="notes">
-    <h3>كيف يعمل؟</h3>
+    <h3>How it works</h3>
     <ul>
-      <li><b>الصور:</b> فحص البيانات الوصفية (EXIF/XMP/C2PA) + تحليل الترددات FFT + تجانس الضجيج.</li>
-      <li><b>الصوت/الفيديو:</b> فحص علامات TTS المعروفة + تحليل طيفي لملفات WAV.</li>
-      <li><b>النص:</b> التنوع المعجمي، الانفجارية، التكرار، العبارات النمطية.</li>
+      <li><b>Images:</b> metadata scan (EXIF / XMP / C2PA) + frequency-domain (FFT) analysis + noise uniformity.</li>
+      <li><b>Audio / video:</b> known TTS/generator markers + spectral analysis for WAV files.</li>
+      <li><b>Text:</b> lexical diversity, burstiness, repetition, formulaic phrases.</li>
     </ul>
-    <p class="warn">⚠️ التعديلات الشديدة والضغط القوي يُضعفان الإشارة. النتيجة احتمالية وليست دليلًا قاطعًا — اجمع أدلة إضافية دائمًا.</p>
+    <p class="warn">⚠️ Heavy edits and strong compression degrade the signal. Scores are probabilistic, not conclusive proof — always gather additional evidence.</p>
   </section>
 </main>
+
+<footer class="footer">
+  <p>© 2026 salim-slimani. All rights reserved. · ianalysis — AI Content Detector</p>
+</footer>
 <script src="/static/app.js"></script>
 </body>
 </html>

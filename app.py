@@ -22,21 +22,21 @@ def index():
 def detect_image():
     f = request.files.get("file")
     if not f or not f.filename:
-        return jsonify({"error": "ارفع ملف صورة أولًا"}), 400
+        return jsonify({"error": "Please upload an image first"}), 400
     raw = f.read()
     if len(raw) > 50 * 1024 * 1024:
-        return jsonify({"error": "الملف كبير (>50MB)"}), 400
+        return jsonify({"error": "File too large (>50MB)"}), 400
     try:
         res = analyze_image(raw)
     except Exception as e:
-        return jsonify({"error": f"تعذّر قراءة الصورة: {e}"}), 400
+        return jsonify({"error": f"Could not read image: {e}"}), 400
     return jsonify(res)
 
 @app.post("/api/detect-audio")
 def detect_audio():
     f = request.files.get("file")
     if not f or not f.filename:
-        return jsonify({"error": "ارفع ملف صوت/فيديو أولًا"}), 400
+        return jsonify({"error": "Please upload an audio/video file first"}), 400
     raw = f.read()
     ext = ext_of(f.filename)
     if ext in ALLOWED_VID:
@@ -48,7 +48,7 @@ def detect_text():
     data = request.get_json(silent=True) or {}
     text = data.get("text", "") or request.form.get("text", "")
     if not text.strip():
-        return jsonify({"error": "أدخل نصًا أولًا"}), 400
+        return jsonify({"error": "Please enter some text first"}), 400
     return jsonify(analyze_text(text))
 
 @app.get("/api/health")

@@ -1,7 +1,7 @@
-"""Audio/Video heuristic detector.
+"""Audio/Video AI-generation detector (ianalysis engine).
 
 - Scans container metadata bytes for AI TTS/VC keywords (elevenlabs, suno, udio,
-  murf, tts, bark, xtts, sovits, diffsinger, veo, pika, runway, synthid...).
+  murf, tts, bark, xtts, sovits, diffsinger, veo, pika, runway...).
 - For WAV: spectral flatness + zero-crossing analysis (neural vocoders are
   over-smooth vs. noisy mic recordings).
 - For video (mp4/webm): metadata scan + note that frame-level scan needs ffmpeg.
@@ -12,7 +12,7 @@ import numpy as np
 
 AI_AUDIO_KW = ["elevenlabs", "suno", "udio", "murf", "play.ht", "playht",
                "tts", "text-to-speech", "bark", "xtts", "sovits", "diffsinger",
-               "rvc", "so-vits", "veo", "pika", "runway", "synthid", "lovo",
+               "rvc", "so-vits", "veo", "pika", "runway", "lovo",
                "resemble", "descript", "lyria", "musiclm", "audiolm"]
 
 def _kw_scan(raw: bytes):
@@ -57,18 +57,18 @@ def _wav_stats(raw: bytes):
 def analyze_audio(raw: bytes, filename: str = ""):
     hits = _kw_scan(raw)
     if hits:
-        return {"score": 0.95, "verdict": "watermarked",
+        return {"score": 0.95, "verdict": "ai_generated",
                 "details": {"metadata_hits": hits, "file": filename}}
     ext = (filename.rsplit(".", 1)[-1] if "." in filename else "").lower()
     if ext in ("wav", "wave") or raw[:4] == b"RIFF":
         st = _wav_stats(raw)
         if st:
             s = st.pop("stat_score")
-            v = "watermarked" if s >= 0.7 else ("uncertain" if s >= 0.4 else "not_watermarked")
+            v = "ai_generated" if s >= 0.7 else ("uncertain" if s >= 0.4 else "human")
             return {"score": round(s, 3), "verdict": v, "details": st}
     # generic compressed audio: can't do deep forensics without decode libs
     return {"score": 0.5, "verdict": "uncertain",
-            "details": {"note": "لا توجد علامات provenance في البيانات الوصفية. الملف مضغوط (mp3/ogg/m4a) — التحليل الطيفي الدقيق يتطلب فك التشفير. النتيجة محايدة.",
+            "details": {"note": "No provenance markers in metadata. Compressed file (mp3/ogg/m4a) — precise spectral analysis requires decoding. Neutral result.",
                         "metadata_hits": hits, "file": filename}}
 
 def analyze_video(raw: bytes, filename: str = ""):
@@ -77,9 +77,9 @@ def analyze_video(raw: bytes, filename: str = ""):
                          "stable video", "deforum", "animatediff"]
     hits = [k for k in vkw if k in low]
     if hits:
-        return {"score": 0.95, "verdict": "watermarked",
+        return {"score": 0.95, "verdict": "ai_generated",
                 "details": {"metadata_hits": hits, "file": filename,
                             "size_mb": round(len(raw) / 1e6, 2)}}
     return {"score": 0.5, "verdict": "uncertain",
-            "details": {"note": "لا توجد علامات provenance في حاوية الفيديو. كشف إطارات الفيديو المولّد يحتاج FFmpeg/OpenCV — النتيجة محايدة.",
+            "details": {"note": "No provenance markers in the video container. Generated-video frame detection needs FFmpeg/OpenCV — neutral result.",
                         "file": filename, "size_mb": round(len(raw) / 1e6, 2)}}
